@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTaskManager } from "../store/useTaskManager";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 const TaskManager = () => {
   const { tasks, addTask, updateTask, removeTask, searchTask } = useTaskManager();
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [updatedTaskTitle, setUpdatedTaskTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [savedTasks, setSavedTasks] = useLocalStorage("tasks", []);
+
+  
+
+  useEffect(() => {
+    setSavedTasks(tasks); // Save tasks to localStorage
+  }, [tasks, setSavedTasks]);
+
+  useEffect(() => {
+    const loadedTasks = JSON.parse(localStorage.getItem("tasks")); // Retrieve tasks from localStorage
+    if (loadedTasks) {
+      setSavedTasks(loadedTasks);
+    }
+  }, [setSavedTasks]);
 
   const handleAddTask = () => {
     addTask({ id: Date.now(), title: newTaskTitle });
